@@ -59,7 +59,8 @@ public class Config {
             general.getNode("Event", "stats-percent-increase").setComment("In decimal format... aka 20% would be 0.2").getDouble(0.2);
             general.getNode("Event","enable-spawning").getBoolean(false);
             general.getNode("Event","enable-tracking").getBoolean(false);
-            general.getNode("Event","aura").getString("blazing");
+            general.getNode("Event", "aura-type").getString("Scattered");
+            general.getNode("Event", "aura-effect").getString("Clouds");
             general.getNode("Event","nickname").getString("\u00A7eSummer {pokemon}\u00A7f");
             general.getNode("Event","spawn-chance").setComment("Chance that a spawn attempt will succeed (1/spawnChance)").getInt(100);
             general.getNode("Event","broadcast-spawn-message").getString("&dA &eSummer Pok\u00E9mon &dhas spawned in a &b{biome} &dbiome!");

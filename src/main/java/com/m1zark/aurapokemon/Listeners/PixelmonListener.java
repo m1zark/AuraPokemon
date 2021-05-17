@@ -15,6 +15,8 @@ import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.forms.EnumMega;
+import de.waterdu.aquaauras.auras.AuraInstance;
+import de.waterdu.aquaauras.auras.AuraStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.biome.Biome;
 import de.waterdu.aquaauras.helper.FileHelper;
@@ -68,24 +70,44 @@ public class PixelmonListener {
                         pixelmon.getPokemonData().setNickname(((String)Config.getEventOption("nickname")).replace("{pokemon}", pixelmon.getPokemonName()));
                         AuraDefinition ad = FileHelper.getAuraDefinitionForName((String)Config.getEventOption("aura-type"));
                         EffectDefinition ed = FileHelper.getEffectDefinitionForName((String)Config.getEventOption("aura-effect"));
-                        pixelmon.getPokemonData().getPersistentData().setInteger("AuraType", ad.getId());
-                        pixelmon.getPokemonData().getPersistentData().setInteger("AuraEffect", ed.getId());
-                        pixelmon.getPokemonData().getPersistentData().setBoolean("HasAura", true);
-                        pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEvent", true);
+                        //pixelmon.getPokemonData().getPersistentData().setInteger("AuraAD", ad.getId());
+                        //pixelmon.getPokemonData().getPersistentData().setInteger("AuraED", ed.getId());
+                        //pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEN", true);
+                        //pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEvent", true);
 
-                        this.updatePokemonEvent(pixelmon.getStoragePokemonData());
-                        pixelmon.canDespawn = false;
-                        AuraPokemon.lastEventSpawn = Instant.now().toEpochMilli();
+                        AuraStorage auras = new AuraStorage(pixelmon.getPokemonData().getPersistentData());
+                        int result = auras.addAura(new AuraInstance(ad, ed, true), null, pixelmon);
 
-                        AuraEvent auraEvent = new AuraEvent(pixelmon.getPokemonName(), ((String) Config.getEventOption("nickname")).replace(" {pokemon}", ""), PixelmonListener.getBiomeName(event.action.spawnLocation.biome), Cause.builder().append(this).build(EventContext.builder().build()));
-                        Sponge.getEventManager().post(auraEvent);
+                        if(result > 0) {
+                            pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEvent", true);
+                            this.updatePokemonEvent(pixelmon.getStoragePokemonData());
+                            pixelmon.canDespawn = false;
+                            AuraPokemon.lastEventSpawn = Instant.now().toEpochMilli();
 
-                        if(Config.enableMessages("Discord.enableDiscordNotifications")) {
-                            M1utilities.getInstance().getDiscordNotifier().ifPresent(notifier -> {
-                                Message message = notifier.forgeMessage(Config.discordOption("event-spawn",pixelmon.getPokemonName(),getBiomeName(event.action.spawnLocation.biome)));
-                                notifier.sendMessage(message);
-                            });
+                            AuraEvent auraEvent = new AuraEvent(pixelmon.getPokemonName(), ((String) Config.getEventOption("nickname")).replace(" {pokemon}", ""), PixelmonListener.getBiomeName(event.action.spawnLocation.biome), Cause.builder().append(this).build(EventContext.builder().build()));
+                            Sponge.getEventManager().post(auraEvent);
+
+                            if(Config.enableMessages("Discord.enableDiscordNotifications")) {
+                                M1utilities.getInstance().getDiscordNotifier().ifPresent(notifier -> {
+                                    Message message = notifier.forgeMessage(Config.discordOption("event-spawn",pixelmon.getPokemonName(),getBiomeName(event.action.spawnLocation.biome)));
+                                    notifier.sendMessage(message);
+                                });
+                            }
                         }
+
+                        //this.updatePokemonEvent(pixelmon.getStoragePokemonData());
+                        //pixelmon.canDespawn = false;
+                        //AuraPokemon.lastEventSpawn = Instant.now().toEpochMilli();
+
+                        //AuraEvent auraEvent = new AuraEvent(pixelmon.getPokemonName(), ((String) Config.getEventOption("nickname")).replace(" {pokemon}", ""), PixelmonListener.getBiomeName(event.action.spawnLocation.biome), Cause.builder().append(this).build(EventContext.builder().build()));
+                        //Sponge.getEventManager().post(auraEvent);
+
+                        //if(Config.enableMessages("Discord.enableDiscordNotifications")) {
+                            //M1utilities.getInstance().getDiscordNotifier().ifPresent(notifier -> {
+                                //Message message = notifier.forgeMessage(Config.discordOption("event-spawn",pixelmon.getPokemonName(),getBiomeName(event.action.spawnLocation.biome)));
+                                //notifier.sendMessage(message);
+                            //});
+                        //}
                     }
                 }
 
