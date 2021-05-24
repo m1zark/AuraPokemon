@@ -42,9 +42,9 @@ public class PixelmonListener {
     public void onPokemonCapture(CaptureEvent.SuccessfulCapture event) {
         EntityPlayerMP player = event.player;
         Pokemon pokemon = event.getPokemon().getPokemonData();
-        if (pokemon.getPersistentData().hasKey("HasAura") && pokemon.getPersistentData().hasKey("AuraEvent")) {
-            AuraDefinition ad = FileHelper.getAuraDefinitionForID(pokemon.getPersistentData().getInteger("AuraType"));
-            EffectDefinition ed = FileHelper.getEffectDefinitionForID(pokemon.getPersistentData().getInteger("AuraEffect"));
+        if (pokemon.getPersistentData().hasKey("Auras") && pokemon.getPersistentData().hasKey("AuraEvent")) {
+            AuraDefinition ad = FileHelper.getAuraDefinitionForID(pokemon.getPersistentData().getInteger("AuraAD"));
+            EffectDefinition ed = FileHelper.getEffectDefinitionForID(pokemon.getPersistentData().getInteger("AuraED"));
             if (ad.getName().equals(Config.getEventOption("aura-type")) && ed.getName().equals(Config.getEventOption("aura-effect"))) {
                 if (Config.enableTracking) {
                     PlayerData.updatePlayerData(((Player)player).getUniqueId().toString());
@@ -70,10 +70,6 @@ public class PixelmonListener {
                         pixelmon.getPokemonData().setNickname(((String)Config.getEventOption("nickname")).replace("{pokemon}", pixelmon.getPokemonName()));
                         AuraDefinition ad = FileHelper.getAuraDefinitionForName((String)Config.getEventOption("aura-type"));
                         EffectDefinition ed = FileHelper.getEffectDefinitionForName((String)Config.getEventOption("aura-effect"));
-                        //pixelmon.getPokemonData().getPersistentData().setInteger("AuraAD", ad.getId());
-                        //pixelmon.getPokemonData().getPersistentData().setInteger("AuraED", ed.getId());
-                        //pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEN", true);
-                        //pixelmon.getPokemonData().getPersistentData().setBoolean("AuraEvent", true);
 
                         AuraStorage auras = new AuraStorage(pixelmon.getPokemonData().getPersistentData());
                         int result = auras.addAura(new AuraInstance(ad, ed, true), null, pixelmon);
@@ -94,20 +90,6 @@ public class PixelmonListener {
                                 });
                             }
                         }
-
-                        //this.updatePokemonEvent(pixelmon.getStoragePokemonData());
-                        //pixelmon.canDespawn = false;
-                        //AuraPokemon.lastEventSpawn = Instant.now().toEpochMilli();
-
-                        //AuraEvent auraEvent = new AuraEvent(pixelmon.getPokemonName(), ((String) Config.getEventOption("nickname")).replace(" {pokemon}", ""), PixelmonListener.getBiomeName(event.action.spawnLocation.biome), Cause.builder().append(this).build(EventContext.builder().build()));
-                        //Sponge.getEventManager().post(auraEvent);
-
-                        //if(Config.enableMessages("Discord.enableDiscordNotifications")) {
-                            //M1utilities.getInstance().getDiscordNotifier().ifPresent(notifier -> {
-                                //Message message = notifier.forgeMessage(Config.discordOption("event-spawn",pixelmon.getPokemonName(),getBiomeName(event.action.spawnLocation.biome)));
-                                //notifier.sendMessage(message);
-                            //});
-                        //}
                     }
                 }
 
