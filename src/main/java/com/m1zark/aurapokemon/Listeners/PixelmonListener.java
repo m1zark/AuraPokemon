@@ -152,14 +152,14 @@ public class PixelmonListener {
     }
 
     private void updatePokemonEvent(Pokemon pokemon) {
-        int[] ivs = new int[]{pokemon.getIVs().hp, pokemon.getIVs().attack, pokemon.getIVs().defence, pokemon.getIVs().specialAttack, pokemon.getIVs().specialDefence, pokemon.getIVs().speed};
+        int[] ivs = new int[]{pokemon.getIVs().getStat(StatsType.HP), pokemon.getIVs().getStat(StatsType.Attack), pokemon.getIVs().getStat(StatsType.Defence), pokemon.getIVs().getStat(StatsType.SpecialAttack), pokemon.getIVs().getStat(StatsType.SpecialDefence), pokemon.getIVs().getStat(StatsType.Speed)};
         StatsType[] stats = new StatsType[]{StatsType.HP, StatsType.Attack, StatsType.Defence, StatsType.SpecialAttack, StatsType.SpecialDefence, StatsType.Speed};
 
         for(int i = 0; i <= 5; i++) {
             int amount = (int)(ivs[i] + (ivs[i] * Config.updatePercent));
             if(amount > 31) amount = 31;
 
-            pokemon.getIVs().set(stats[i], amount);
+            pokemon.getIVs().setStat(stats[i], amount);
         }
     }
 
