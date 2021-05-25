@@ -42,17 +42,11 @@ public class PixelmonListener {
     public void onPokemonCapture(CaptureEvent.SuccessfulCapture event) {
         EntityPlayerMP player = event.player;
         Pokemon pokemon = event.getPokemon().getPokemonData();
-        if (pokemon.getPersistentData().hasKey("Auras") && pokemon.getPersistentData().hasKey("AuraEvent")) {
-            AuraDefinition ad = FileHelper.getAuraDefinitionForID(pokemon.getPersistentData().getInteger("AuraAD"));
-            EffectDefinition ed = FileHelper.getEffectDefinitionForID(pokemon.getPersistentData().getInteger("AuraED"));
-            if (ad.getName().equals(Config.getEventOption("aura-type")) && ed.getName().equals(Config.getEventOption("aura-effect"))) {
-                if (Config.enableTracking) {
-                    PlayerData.updatePlayerData(((Player)player).getUniqueId().toString());
-                }
-                if (Config.broadcastCaught) {
-                    Chat.sendServerWideMessage(((String)Config.getEventOption("broadcast-caught-message")).replace("{player}", player.getName()));
-                }
-            }
+        AuraStorage auras = new AuraStorage(event.getPokemon().getPokemonData().getPersistentData());
+
+        if (auras.hasAuras() && pokemon.getPersistentData().hasKey("AuraEvent")) {
+                if (Config.enableTracking) PlayerData.updatePlayerData(((Player)player).getUniqueId().toString());
+                if (Config.broadcastCaught) Chat.sendServerWideMessage(((String) Config.getEventOption("broadcast-caught-message")).replace("{player}", player.getName()));
         }
     }
 
@@ -166,14 +160,14 @@ public class PixelmonListener {
     private void updatePokemonCustom(Pokemon pokemon) {
         double percent = 0.2;
 
-        int[] ivs = new int[]{pokemon.getIVs().hp, pokemon.getIVs().attack, pokemon.getIVs().defence, pokemon.getIVs().specialAttack, pokemon.getIVs().specialDefence, pokemon.getIVs().speed};
+        int[] ivs = new int[]{pokemon.getIVs().getStat(StatsType.HP), pokemon.getIVs().getStat(StatsType.Attack), pokemon.getIVs().getStat(StatsType.Defence), pokemon.getIVs().getStat(StatsType.SpecialAttack), pokemon.getIVs().getStat(StatsType.SpecialDefence), pokemon.getIVs().getStat(StatsType.Speed)};
         StatsType[] stats = new StatsType[]{StatsType.HP, StatsType.Attack, StatsType.Defence, StatsType.SpecialAttack, StatsType.SpecialDefence, StatsType.Speed};
 
         for(int i = 0; i <= 5; i++) {
             int amount = (int)(ivs[i] + (ivs[i] * percent));
             if(amount > 31) amount = 31;
 
-            pokemon.getIVs().set(stats[i], amount);
+            pokemon.getIVs().setStat(stats[i], amount);
         }
     }
 }
